@@ -73,6 +73,7 @@ async function captureSlides() {
    // Creates the PDF
     // Reveal the Player Navigation & Chrome so use can navigate again
    // Save PDF using the Document
+  pdf.save(document.title+".pdf");
     // Return HTML DIV Element with total slide count
     // Returns the text Content of the Slide Cound Dive. Expected form is "X / X"
   // Returns the current slide number and the total slide number
