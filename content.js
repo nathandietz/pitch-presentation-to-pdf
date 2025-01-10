@@ -69,6 +69,7 @@ async function captureSlides() {
 
     // Ensure we're on the first slide before starting the capture process. 
     // Removed async, since we need it get back to the first slice before we start capture
+  goToFirstSlide();
    // Crop Capture to slide content
    // I don't want to see the black area of the screen. So I'm calculating the size & positioning of the actual shown content.  
 
