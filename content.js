@@ -42,6 +42,11 @@ async function captureSlides() {
         pdf.addPage();
       }
       pdf.addImage(image, "PNG", 0, 0, 1920, 980);
+    // Return HTML DIV Element with total slide count
+    // Returns the text Content of the Slide Cound Dive. Expected form is "X / X"
+    // Returns the current slide number and the total slide number
+    // Returns the HTML Button Element for the Next Slide Button
+    // Create array for captured images
     });
   
     pdf.save("presentation.pdf");
@@ -56,6 +61,21 @@ async function captureSlides() {
       const firstSlideBtn = document.querySelector('div.dash[data-test-id="dash-0"][idx="0"]');
       firstSlideBtn.click();
   
+    // Returns HTML DIV Element for all of the Player Navigation & Chrome
+    // Temporarily hide the Player Navigation & Chrome so it does not appear in the captured image
+    // Ensure we're on the first slide before starting the capture process. 
+    // Removed async, since we need it get back to the first slice before we start capture
+   // Crop Capture to slide content
+   // I don't want to see the black area of the screen. So I'm calculating the size & positioning of the actual shown content.  
+   // Returns the dimentions of the actual slide content
+   // Calculates the difference between the dimentions of the broswer window and the slide content
+   // Calculates the size of the PDF document
+   // Creates the PDF
+    // Reveal the Player Navigation & Chrome so use can navigate again
+   // Save PDF using the Document
+    // Return HTML DIV Element with total slide count
+    // Returns the text Content of the Slide Cound Dive. Expected form is "X / X"
+  // Returns the current slide number and the total slide number
       // Wait for the slide to change and make sure the current slide is 1
       await new Promise((resolve) => {
         const observer = new MutationObserver(() => {
