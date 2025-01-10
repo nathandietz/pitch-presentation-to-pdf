@@ -71,10 +71,33 @@ async function captureSlides() {
     // Removed async, since we need it get back to the first slice before we start capture
    // Crop Capture to slide content
    // I don't want to see the black area of the screen. So I'm calculating the size & positioning of the actual shown content.  
+
    // Returns the dimentions of the actual slide content
+  const slideWidth  = document.querySelector('#current-visible-slide').clientWidth;
+  const slideHeight = document.querySelector('#current-visible-slide').clientHeight;
+
    // Calculates the difference between the dimentions of the broswer window and the slide content
+  const slideWidthDifference  = window.innerWidth  - document.querySelector('.slide-wrapper').clientWidth;
+  const slideHeightDifference = window.innerHeight - document.querySelector('.slide-wrapper').clientHeight;
+
    // Calculates the size of the PDF document
+  const pdfWidth  = slideWidth  - slideWidthDifference;
+  const pdfHeight = slideHeight - slideHeightDifference;
+
    // Creates the PDF
+  const pdf = new window.jspdf.jsPDF({
+    orientation: "landscape",
+    unit: "px",
+    format: [pdfWidth, pdfHeight]
+  });
+  
+  slideImages.forEach((image, index) => {
+    if (index > 0) {
+      pdf.addPage();
+    }
+    pdf.addImage(image, "JPEG", -slideWidthDifference/2, -slideHeightDifference/2, slideWidth, slideHeight);
+  });
+
     // Reveal the Player Navigation & Chrome so use can navigate again
   slideControls.hidden = false;
   
