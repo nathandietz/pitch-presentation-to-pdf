@@ -62,7 +62,11 @@ async function captureSlides() {
       firstSlideBtn.click();
   
     // Returns HTML DIV Element for all of the Player Navigation & Chrome
+  const slideControls = document.querySelector('.player-v2-chrome');
+
     // Temporarily hide the Player Navigation & Chrome so it does not appear in the captured image
+  slideControls.hidden = true;
+
     // Ensure we're on the first slide before starting the capture process. 
     // Removed async, since we need it get back to the first slice before we start capture
    // Crop Capture to slide content
@@ -72,6 +76,8 @@ async function captureSlides() {
    // Calculates the size of the PDF document
    // Creates the PDF
     // Reveal the Player Navigation & Chrome so use can navigate again
+  slideControls.hidden = false;
+  
    // Save PDF using the Document
   pdf.save(document.title+".pdf");
     // Return HTML DIV Element with total slide count
