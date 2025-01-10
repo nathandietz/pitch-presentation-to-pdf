@@ -1,66 +1,43 @@
 async function captureSlides() {
-    const slideCountElement = document.querySelector('.player-v2-chrome-controls-slide-count');
-    const totalSlides = parseInt(slideCountElement.textContent.split(' / ')[1]);
-  
-    const nextButton = document.querySelector('.player-v2--button[aria-label="next"]');
-  
-    const slideImages = [];
-  
-    for (let i = 0; i < totalSlides; i++) {
-      const dataUrl = await new Promise((resolve) => {
-        setTimeout(() => {
-          chrome.runtime.sendMessage({ type: 'captureTab' }, (dataUrl) => {
-            resolve(dataUrl);
-          });
-        }, 1000);
-      });
-  
-      slideImages.push(dataUrl);
-  
-      if (i < totalSlides - 1) {
-        nextButton.click();
-      }
-    }
-  
-    return slideImages;
-  }
-  
-  async function exportPresentation() {
-    // Ensure we're on the first slide before starting the capture process
-    await goToFirstSlide();
-  
-    const slideImages = await captureSlides();
-  
-    const pdf = new window.jspdf.jsPDF({
-      orientation: "landscape",
-      unit: "px",
-      format: [1920, 980],
-    });
-  
-    slideImages.forEach((image, index) => {
-      if (index > 0) {
-        pdf.addPage();
-      }
-      pdf.addImage(image, "PNG", 0, 0, 1920, 980);
+
     // Return HTML DIV Element with total slide count
+  const slideCountElement = document.querySelector('.player-v2-chrome-controls-slide-count');
+
     // Returns the text Content of the Slide Cound Dive. Expected form is "X / X"
+  const slideCountText = slideCountElement.textContent;
+
     // Returns the current slide number and the total slide number
+  const [currentSlide, totalSlides] = slideCountText.split(" / ").map(Number);
+
     // Returns the HTML Button Element for the Next Slide Button
+  const nextButton = document.querySelector('.player-v2--button[aria-label="next"]');
+
     // Create array for captured images
+  const slideImages = [];
+
+
+  for (let i = 0; i < totalSlides; i++) {
+    const dataUrl = await new Promise((resolve) => {
+      setTimeout(() => {
+        chrome.runtime.sendMessage({ type: 'captureTab' }, (dataUrl) => {
+          resolve(dataUrl);
+        });
+      }, 1000);
     });
-  
-    pdf.save("presentation.pdf");
+
+    slideImages.push(dataUrl);
+
+    if (i < totalSlides - 1) {
+      nextButton.click();
+    }
   }
-  
-  async function goToFirstSlide() {
-    const slideCountElement = document.querySelector(".player-v2-chrome-controls-slide-count");
-    const slideCountText = slideCountElement.textContent;
-    const [currentSlide, totalSlides] = slideCountText.split(" / ").map(Number);
-  
-    if (currentSlide !== 1) {
-      const firstSlideBtn = document.querySelector('div.dash[data-test-id="dash-0"][idx="0"]');
-      firstSlideBtn.click();
-  
+
+  return slideImages;
+}
+
+
+async function exportPresentation() {
+
     // Returns HTML DIV Element for all of the Player Navigation & Chrome
   const slideControls = document.querySelector('.player-v2-chrome');
 
@@ -70,6 +47,9 @@ async function captureSlides() {
     // Ensure we're on the first slide before starting the capture process. 
     // Removed async, since we need it get back to the first slice before we start capture
   goToFirstSlide();
+  
+  const slideImages = await captureSlides();
+
    // Crop Capture to slide content
    // I don't want to see the black area of the screen. So I'm calculating the size & positioning of the actual shown content.  
 
@@ -104,36 +84,50 @@ async function captureSlides() {
   
    // Save PDF using the Document
   pdf.save(document.title+".pdf");
+}
+
+async function goToFirstSlide() {
+
     // Return HTML DIV Element with total slide count
+  const slideCountElement = document.querySelector('.player-v2-chrome-controls-slide-count');
+
     // Returns the text Content of the Slide Cound Dive. Expected form is "X / X"
+  const slideCountText = slideCountElement.textContent;
+
   // Returns the current slide number and the total slide number
+  const [currentSlide, totalSlides] = slideCountText.split(" / ").map(Number);
+  
+
+  if (currentSlide !== 1) {
+    const firstSlideBtn = document.querySelector('div.dash[data-test-id="dash-0"][idx="0"]');
+    firstSlideBtn.click();
+
       // Wait for the slide to change and make sure the current slide is 1
-      await new Promise((resolve) => {
-        const observer = new MutationObserver(() => {
-          if (slideCountElement.textContent.startsWith("1 /")) {
-            observer.disconnect();
-            resolve();
-          }
-        });
-  
-        observer.observe(slideCountElement, { childList: true, subtree: true });
+    await new Promise((resolve) => {
+      const observer = new MutationObserver(() => {
+        if (slideCountElement.textContent.startsWith("1 /")) {
+          observer.disconnect();
+          resolve();
+        }
       });
-  
+
+      observer.observe(slideCountElement, { childList: true, subtree: true });
+    });
+
       // Add a short delay to ensure slide navigation is complete before capturing
-      await new Promise((resolve) => setTimeout(resolve, 500));
-    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
-  
+}
+
 // Add the following function:
 function init() {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if (message.action === "exportPresentation") {
-        exportPresentation();
-        sendResponse({ success: true });
-      }
-    });
-  }
-  
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "exportPresentation") {
+      exportPresentation();
+      sendResponse({ success: true });
+    }
+  });
+}
+
   // Call the init function
-  init();
-  
+init();
